@@ -78,7 +78,7 @@ void mergeSortParallel(int *arr, int length) {
     // #pragma omp parallel sections
     // {
     //
-    #pragma omp section
+    #pragma omp 
     //
     {
     //
@@ -94,7 +94,7 @@ void mergeSortParallel(int *arr, int length) {
     //
     }
     //
-    #pragma omp section
+    #pragma omp 
     //
     {
     //
