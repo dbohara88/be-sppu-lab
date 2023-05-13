@@ -1,29 +1,56 @@
-#include "stdio.h"
-#include "math.h"
-#define N 10
-void add ( int *a, int *b, int *c )
+#include<stdio.h>
+#include<cuda.h>
+
+__global__ void arradd(int *x,int *y, int *z)    //kernel definition
 {
-int tid = 0; // this is CPU zero, so we start at zero
-while (tid < N)
-{
-c[tid] = a[tid] + b[tid];
-tid += 1; // we have one CPU, so we increment by one
+  int id=blockIdx.x; 
+/* blockIdx.x gives the respective block id which starts from 0 */
+  z[id]=x[id]+y[id];
 }
-}
-int main( void )
+
+int main()
 {
-int a[N], b[N], c[N];
-// fill the arrays 'a' and 'b' on the CPU
-for (int i=0; i<N; i++)
-{
-a [i] = i;
-b[i] = i * i;
-}
-add( a, b, c );
-// display the results
-for (int i=0; i<N; i++)
-{
-printf( "%d + %d = %d\n", a[i], b[i], c[i] );
-}
-return 0;
+    int a[6];
+    int b[6];
+    int c[6];
+    int *d,*e,*f;
+    int i;
+    printf("\n Enter six elements of first array\n");
+    for(i=0;i<6;i++)
+    {
+        scanf("%d",&a[i]);
+    }
+    printf("\n Enter six elements of second array\n");
+        for(i=0;i<6;i++)
+        {
+            scanf("%d",&b[i]);
+        }
+
+/* cudaMalloc() allocates memory from Global memory on GPU */
+    cudaMalloc((void **)&d,6*sizeof(int));
+    cudaMalloc((void **)&e,6*sizeof(int));
+    cudaMalloc((void **)&f,6*sizeof(int));
+
+/* cudaMemcpy() copies the contents from destination to source. Here destination is GPU(d,e) and source is CPU(a,b) */
+ cudaMemcpy(d,a,6*sizeof(int),cudaMemcpyHostToDevice);   
+ cudaMemcpy(e,b,6*sizeof(int),cudaMemcpyHostToDevice);
+ 
+/* call to kernel. Here 6 is number of blocks, 1 is the number of threads per block and d,e,f are the arguments */ 
+arradd<<<6,1>>>(d,e,f); 
+
+/* Here we are copying content from GPU(Device) to CPU(Host) */
+ cudaMemcpy(c,f,6*sizeof(int),cudaMemcpyDeviceToHost);
+    
+printf("\nSum of two arrays:\n ");
+    for(i=0;i<6;i++)
+    {
+        printf("%d\t",c[i]);
+    }
+
+/* Free the memory allocated to pointers d,e,f */
+    cudaFree(d);
+    cudaFree(e);
+    cudaFree(f);
+
+    return 0;
 }
