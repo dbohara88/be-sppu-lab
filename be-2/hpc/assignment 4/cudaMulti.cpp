@@ -62,5 +62,3 @@ int main() {
 
     return 0;
 }
-mat_multi.txt
-Displaying mat_multi.txt.
