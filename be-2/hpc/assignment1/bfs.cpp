@@ -8,7 +8,8 @@ vector<int> adj[MAXN];
 bool visited[MAXN];
 void bfs(int start_node) 
 {
-    queue<int> q;q.push(start_node);
+    queue<int> q;
+    q.push(start_node);
     visited[start_node] = true;
     while (!q.empty()) 
     {
@@ -21,7 +22,8 @@ void bfs(int start_node)
             int v = adj[u][i];
             if (!visited[v]) 
             {
-                visited[v] = true;q.push(v);
+                visited[v] = true;
+                q.push(v);
             }
         }
     }
@@ -37,7 +39,11 @@ int main()
         adj[u].push_back(v);
         adj[v].push_back(u);
         }
-        int start_node;cout << "Enter the node to start BFS from: ";
-        cin >> start_node;cout << "BFS traversal starting from node " << start_node << ": ";
-        bfs(start_node);cout << endl;return 0;
+    int start_node;
+    cout << "Enter the node to start BFS from: ";
+    cin >> start_node;
+    cout << "BFS traversal starting from node " << start_node << ": ";
+    bfs(start_node);
+    cout << endl;
+    return 0;
 }
