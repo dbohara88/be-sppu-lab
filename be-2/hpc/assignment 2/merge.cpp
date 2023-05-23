@@ -1,96 +1,70 @@
-#include<iostream>
-#include<stdlib.h>
-#include<omp.h>
+#include <iostream>
+#include <vector>
+
 using namespace std;
 
+void merge(vector<int>& arr, int left, int mid, int right) {
+    vector<int> leftArr(arr.begin() + left, arr.begin() + mid + 1);
+    vector<int> rightArr(arr.begin() + mid + 1, arr.begin() + right + 1);
 
-void mergesort(int a[],int i,int j);
-void merge(int a[],int i1,int j1,int i2,int j2);
+    int i = 0, j = 0, k = left;
 
-void mergesort(int a[],int i,int j)
-{
-	int mid;
-	if(i<j)
-	{
-    	mid=(i+j)/2;
-   	 
-    	#pragma omp parallel sections
-    	{
+    while (i < leftArr.size() && j < rightArr.size()) {
+        if (leftArr[i] <= rightArr[j])
+            arr[k++] = leftArr[i++];
+        else
+            arr[k++] = rightArr[j++];
+    }
 
-        	#pragma omp section
-        	{
-            	mergesort(a,i,mid);   	 
-        	}
+    while (i < leftArr.size())
+        arr[k++] = leftArr[i++];
 
-        	#pragma omp section
-        	{
-            	mergesort(a,mid+1,j);    
-        	}
-    	}
-
-    	merge(a,i,mid,mid+1,j);    
-	}
-
-}
- 
-void merge(int a[],int i1,int j1,int i2,int j2)
-{
-	int temp[1000];    
-	int i,j,k;
-	i=i1;    
-	j=i2;    
-	k=0;
-    
-	while(i<=j1 && j<=j2)    
-	{
-    	if(a[i]<a[j])
-    	{
-        	temp[k++]=a[i++];
-    	}
-    	else
-    	{
-        	temp[k++]=a[j++];
-    }    
-	}
-    
-	while(i<=j1)    
-	{
-    	temp[k++]=a[i++];
-	}
-   	 
-	while(j<=j2)    
-	{
-    	temp[k++]=a[j++];
-	}
-   	 
-	for(i=i1,j=0;i<=j2;i++,j++)
-	{
-    	a[i]=temp[j];
-	}    
+    while (j < rightArr.size())
+        arr[k++] = rightArr[j++];
 }
 
+void mergeSort(vector<int>& arr, int left, int right) {
+    if (left < right) {
+        int mid = (left + right) / 2;
+        mergeSort(arr, left, mid);
+        mergeSort(arr, mid + 1, right);
+        merge(arr, left, mid, right);
+    }
+}
 
-int main()
-{
-	int *a,n,i;
-	cout<<"\n enter total no of elements=>";
-	cin>>n;
-	a= new int[n];
+void printArray(const vector<int>& arr) {
+    for (int num : arr)
+        cout << num << " ";
+    cout << endl;
+}
 
-	cout<<"\n enter elements=>";
-	for(i=0;i<n;i++)
-	{
-    	cin>>a[i];
-	}
-   //	 start=.......
-//#pragma omp…..
-	mergesort(a, 0, n-1);
-//          stop…….
-	cout<<"\n sorted array is=>";
-	for(i=0;i<n;i++)
-	{
-    	cout<<"\n"<<a[i];
-	}
-  	// Cout<<Stop-Start
-	return 0;
+void parallelMergeSort(vector<int>& arr, int left, int right) {
+    if (left < right) {
+        int mid = (left + right) / 2;
+        #pragma omp parallel sections
+        {
+            #pragma omp section
+            mergeSort(arr, left, mid);
+            #pragma omp section
+            mergeSort(arr, mid + 1, right);
+        }
+        merge(arr, left, mid, right);
+    }
+}
+
+int main() {
+    int n;
+    cin >> n;
+    vector<int> arr (n);
+    for(int i=0; i<n; i++)
+    cin >> arr[i];
+    cout << "Original array: ";
+    printArray(arr);
+
+    mergeSort(arr, 0, arr.size() - 1);
+
+    cout << "Sorted array: ";
+    printArray(arr);
+
+    return 0;
 }
