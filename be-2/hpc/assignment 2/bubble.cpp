@@ -1,93 +1,83 @@
 #include <iostream>
-#include <vector>
 #include <chrono>
-#include <algorithm>
 #include <omp.h>
 
 using namespace std;
 using namespace std::chrono;
 
-void sequentialBubbleSort(vector<int>& arr) {
-    int n = arr.size();
-    bool swapped;
-
-    for (int i = 0; i < n - 1; i++) {
-        swapped = false;
-
-        for (int j = 0; j < n - i - 1; j++) {
-            if (arr[j] > arr[j + 1]) {
-                swap(arr[j], arr[j + 1]);
-                swapped = true;
-            }
-        }
-
-        if (!swapped) {
-            break;
-        }
-    }
-}
-
-void parallelBubbleSort(vector<int>& arr) {
-    int n = arr.size();
-    bool swapped;
-
-    #pragma omp parallel
+void bubbleSortSerial(int a[], int n)
+{
+    time_point<system_clock> starttime, endtime;
+    starttime = system_clock::now();
+    for (int i = 0; i < n-1; i++)
     {
-        do {
-            swapped = false;
-
-            #pragma omp for
-            for (int i = 0; i < n - 1; i++) {
-                if (arr[i] > arr[i + 1]) {
-                    swap(arr[i], arr[i + 1]);
-                    swapped = true;
-                }
+        for (int j = 0; j < n-1; j++)
+        {
+            if(a[j] > a[j+1])
+            {
+                int temp = a[j];
+                a[j] = a[j+1];
+                a[j+1] = temp;
             }
-
-            #pragma omp barrier
-        } while (swapped);
+        }
     }
+    endtime = system_clock::now();
+    duration <double> time= endtime - starttime;
+    cout<<"Time for serial: "<<1000*time.count()<<" milliseconds"<<endl;
 }
 
-int main() {
-    int n;
-    cout << "Enter the size of the array: ";
-    cin >> n;
-
-    vector<int> arr(n);
-    cout << "Enter the elements of the array: ";
-    for (int i = 0; i < n; i++) {
-        cin >> arr[i];
+void bubbleSortParallel(int b[], int n)
+{
+    time_point<system_clock> starttime, endtime;
+    starttime = system_clock::now();
+    int pass;
+    omp_set_num_threads(2);
+    for(int i = 0 ; i < n-1 ; i++)
+    {
+        pass = i % 2;
+        #pragma omp parallel for
+        for (int j = pass ; j < n-1 ; j+=2)
+        {
+            if(b[j]>b[j+1])
+            {
+                int temp = b[j];
+                b[j] = b[j+1];
+                b[j+1]=temp;
+            }
+        }
     }
-
-    // Perform sequential bubble sort
-    vector<int> seqArr = arr;
-    auto startSeq = high_resolution_clock::now();
-    sequentialBubbleSort(seqArr);
-    auto endSeq = high_resolution_clock::now();
-    double seqTime = duration_cast<duration<double, milli>>(endSeq - startSeq).count();
-
-    // Perform parallel bubble sort
-    vector<int> parArr = arr;
-    auto startPar = high_resolution_clock::now();
-    parallelBubbleSort(parArr);
-    auto endPar = high_resolution_clock::now();
-    double parTime = duration_cast<duration<double, milli>>(endPar - startPar).count();
-
-    // Display sorted arrays and performance results
-    cout << "Sequential Bubble Sort Result: ";
-    for (int num : seqArr) {
-        cout << num << " ";
+    endtime = system_clock::now();
+    duration<double> time = endtime - starttime;
+    cout<<"Time for Parallel: "<<1000*time.count()<<" milliseconds"<<endl;
+}
+void init_array(int *arr1, int n) {
+    for(int i = 0 ; i < n ; i++) {
+    cin >> arr1[i];
     }
-    cout << endl;
-    cout << "Sequential Bubble Sort Time: " << seqTime << " milliseconds" << endl;
-
-    cout << "Parallel Bubble Sort Result: ";
-    for (int num : parArr) {
-        cout << num << " ";
+}
+void print_array(int *arr, int n) {
+    for(int i = 0 ; i < n ; i++) {
+    cout<<arr[i]<<" ";
     }
-    cout << endl;
-    cout << "Parallel Bubble Sort Time: " << parTime << " milliseconds" << endl;
-
+}
+int main()
+{
+    int n = 50;
+    int *a;
+    a = new int[n];
+    init_array(a, n);
+    cout<<"Initial vector: "<<endl;
+    print_array(a, n);
+    cout<<endl;
+    cout<<endl;
+    bubbleSortSerial(a,n);
+    cout<<"Result after serial bubble sort: "<<endl;
+    print_array(a, n);
+    cout<<endl;
+    cout<<endl;
+    bubbleSortParallel(a,n);
+    cout<<"Result after parallel bubble sort: "<<endl;
+    print_array(a, n);
+    cout<<endl;
     return 0;
 }
