@@ -16,19 +16,19 @@ void dfs(int node)
 
 	while (!s.empty()) 
     {
-    	int curr_node = s.top();
+    	int u = s.top();
 
-    	if (!visited[curr_node]) 
+    	if (!visited[u]) 
         {
-        	visited[curr_node] = true;
+        	visited[u] = true;
             s.pop();
-            cout<<curr_node<<" ";
+            cout<<u<<" ";
         	#pragma omp parallel for
-        	for (int i = 0; i < graph[curr_node].size(); i++) 
+        	for (int i = 0; i < graph[u].size(); i++) 
             {
-            	int adj_node = graph[curr_node][i];
-            	if (!visited[adj_node]) {
-                	s.push(adj_node);
+            	int v = graph[u][i];
+            	if (!visited[v]) {
+                	s.push(v);
             	}
         	}
     	}
