@@ -31,28 +31,7 @@ void bubbleSortSerial(int a[], int n)
     duration <double> time= endtime - starttime;
     cout<<"Time for serial: "<<1000*time.count()<<" milliseconds"<<endl;
 }
-void bubbleSortOddEven(int b[], int n)
-{
-    time_point<system_clock> starttime, endtime;
-    starttime = system_clock::now();
-    int pass;
-    for(int i = 0 ; i < n-1 ; i++)
-    {
-        pass = i % 2;
-        for (int j = pass ; j < n-1 ; j+=2)
-        {
-            if(b[j]>b[j+1])
-            {
-                int temp = b[j];
-                b[j] = b[j+1];
-                b[j+1]=temp;
-            }
-        }
-    }
-    endtime = system_clock::now();
-    duration<double> time = endtime - starttime;
-    cout<<"Time for Bubble sort (Odd Even Transposition): "<<1000*time.count()<<"milliseconds"<<endl;
-}
+
 void bubbleSortParallel(int b[], int n)
 {
     time_point<system_clock> starttime, endtime;
