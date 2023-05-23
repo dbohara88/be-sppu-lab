@@ -62,8 +62,9 @@ void print_array(int *arr, int n) {
 }
 int main()
 {
-    int n = 50;
+    int n;
     int *a;
+    cin >> n;
     a = new int[n];
     init_array(a, n);
     cout<<"Initial vector: "<<endl;
