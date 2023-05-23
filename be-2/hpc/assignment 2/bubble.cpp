@@ -32,17 +32,16 @@ void bubbleSortParallel(int b[], int n)
     starttime = system_clock::now();
     int pass;
     omp_set_num_threads(2);
-    for(int i = 0 ; i < n-1 ; i++)
+    for (int i = 0; i < n-1; i++)
     {
-        pass = i % 2;
         #pragma omp parallel for
-        for (int j = pass ; j < n-1 ; j+=2)
+        for (int j = 0; j < n-1; j++)
         {
-            if(b[j]>b[j+1])
+            if(a[j] > a[j+1])
             {
-                int temp = b[j];
-                b[j] = b[j+1];
-                b[j+1]=temp;
+                int temp = a[j];
+                a[j] = a[j+1];
+                a[j+1] = temp;
             }
         }
     }
