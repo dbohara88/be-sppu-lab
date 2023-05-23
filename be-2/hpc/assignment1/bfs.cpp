@@ -32,19 +32,15 @@ void bfs(int start_node)
 }
 int main() 
 {
-    int n, m;
-    cout << "Enter the number of nodes and edges: ";
-    cin >> n >> m;
+    int n, m, start_node;
+    cout << "Enter no. of Node,no. of Edges and Starting Node of graph:\n";
+    cin >> n >> m >> start_node;
     cout << "Enter the edges (u, v):" << endl;
     for (int i = 0; i < m; i++) {
         int u, v;cin >> u >> v;
         graph[u].push_back(v);
         graph[v].push_back(u);
         }
-    int start_node;
-    cout << "Enter the node to start BFS from: ";
-    cin >> start_node;
-    cout << "BFS traversal starting from node " << start_node << ": ";
     bfs(start_node);
     cout << endl;
     return 0;
