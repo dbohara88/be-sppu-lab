@@ -1,36 +1,11 @@
 #include <iostream>
 #include <vector>
 #include <chrono>
+#include <algorithm>
 #include <omp.h>
 
 using namespace std;
 using namespace std::chrono;
-
-void parallelBubbleSort(vector<int>& arr) {
-    int n = arr.size();
-    bool swapped;
-
-    #pragma omp parallel
-    {
-        #pragma omp for
-        for (int i = 0; i < n - 1; i++) {
-            swapped = false;
-
-            #pragma omp for
-            for (int j = 0; j < n - i - 1; j++) {
-                if (arr[j] > arr[j + 1]) {
-                    swap(arr[j], arr[j + 1]);
-                    swapped = true;
-                }
-            }
-
-            if (!swapped) {
-                // If no swap occurred in the inner loop, the array is already sorted
-                break;
-            }
-        }
-    }
-}
 
 void sequentialBubbleSort(vector<int>& arr) {
     int n = arr.size();
@@ -47,9 +22,30 @@ void sequentialBubbleSort(vector<int>& arr) {
         }
 
         if (!swapped) {
-            // If no swap occurred in the inner loop, the array is already sorted
             break;
         }
+    }
+}
+
+void parallelBubbleSort(vector<int>& arr) {
+    int n = arr.size();
+    bool swapped;
+
+    #pragma omp parallel
+    {
+        do {
+            swapped = false;
+
+            #pragma omp for
+            for (int i = 0; i < n - 1; i++) {
+                if (arr[i] > arr[i + 1]) {
+                    swap(arr[i], arr[i + 1]);
+                    swapped = true;
+                }
+            }
+
+            #pragma omp barrier
+        } while (swapped);
     }
 }
 
@@ -69,14 +65,14 @@ int main() {
     auto startSeq = high_resolution_clock::now();
     sequentialBubbleSort(seqArr);
     auto endSeq = high_resolution_clock::now();
-    double seqTime = duration_cast<milliseconds>(endSeq - startSeq).count();
+    double seqTime = duration_cast<duration<double, milli>>(endSeq - startSeq).count();
 
     // Perform parallel bubble sort
     vector<int> parArr = arr;
     auto startPar = high_resolution_clock::now();
     parallelBubbleSort(parArr);
     auto endPar = high_resolution_clock::now();
-    double parTime = duration_cast<milliseconds>(endPar - startPar).count();
+    double parTime = duration_cast<duration<double, milli>>(endPar - startPar).count();
 
     // Display sorted arrays and performance results
     cout << "Sequential Bubble Sort Result: ";
