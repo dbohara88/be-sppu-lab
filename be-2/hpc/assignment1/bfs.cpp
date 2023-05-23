@@ -2,7 +2,9 @@
 #include <queue>
 #include <vector>
 #include <omp.h>
+
 using namespace std;
+
 const int MAXN = 1e5 + 5;
 vector<int> adj[MAXN];
 bool visited[MAXN];
