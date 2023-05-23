@@ -6,7 +6,7 @@
 using namespace std;
 
 const int MAXN = 1e5 + 5;
-vector<int> adj[MAXN];
+vector<int> graph[MAXN];
 bool visited[MAXN];
 void bfs(int start_node) 
 {
@@ -19,9 +19,9 @@ void bfs(int start_node)
         cout << u << " ";
         q.pop();
         #pragma omp parallel for
-        for (int i = 0; i < adj[u].size(); i++) 
+        for (int i = 0; i < graph[u].size(); i++) 
         {
-            int v = adj[u][i];
+            int v = graph[u][i];
             if (!visited[v]) 
             {
                 visited[v] = true;
@@ -38,8 +38,8 @@ int main()
     cout << "Enter the edges (u, v):" << endl;
     for (int i = 0; i < m; i++) {
         int u, v;cin >> u >> v;
-        adj[u].push_back(v);
-        adj[v].push_back(u);
+        graph[u].push_back(v);
+        graph[v].push_back(u);
         }
     int start_node;
     cout << "Enter the node to start BFS from: ";
