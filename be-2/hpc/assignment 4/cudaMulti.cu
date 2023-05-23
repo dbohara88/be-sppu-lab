@@ -1,7 +1,7 @@
 
 #include <cuda_runtime.h>
 #include <iostream>
-
+using namespace std;
 __global__ void matmul(int* A, int* B, int* C, int N) {
     int Row = blockIdx.y*blockDim.y+threadIdx.y;
     int Col = blockIdx.x*blockDim.x+threadIdx.x;
@@ -15,7 +15,9 @@ __global__ void matmul(int* A, int* B, int* C, int N) {
 }
 
 int main() {
-    int N = 512;
+    int N;
+    cout <<"enter size of matrix n: ";
+    cin >> N;
     int size = N * N * sizeof(int);
     int* A, * B, * C;
     int* dev_A, * dev_B, * dev_C;
@@ -37,17 +39,34 @@ int main() {
     cudaMemcpy(dev_A, A, size, cudaMemcpyHostToDevice);
     cudaMemcpy(dev_B, B, size, cudaMemcpyHostToDevice);
 
-    dim3 dimBlock(16, 16);
+    dim3 dimBlock(N, N);
     dim3 dimGrid(N/dimBlock.x, N/dimBlock.y);
 
     matmul<<<dimGrid, dimBlock>>>(dev_A, dev_B, dev_C, N);
 
     cudaMemcpy(C, dev_C, size, cudaMemcpyDeviceToHost);
 
+    
+    cout << "\n1st matrix" << endl;
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            cout << A[i*N+j] << " "; 
+        }
+        std::cout << std::endl;
+    }
+    cout << "\n2nd matrix" << endl;
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            cout << B[i*N+j] << " "; 
+        }
+        std::cout << std::endl;
+    }
+
     // Print the result
-    for (int i = 0; i < 10; i++) {
-        for (int j = 0; j < 10; j++) {
-            std::cout << C[i*N+j] << " ";
+    cout << "\n resultant matrix" << endl;
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            cout << C[i*N+j] << " ";
         }
         std::cout << std::endl;
     }
