@@ -30,9 +30,9 @@ int main()
 
     // Allocate memory for device vectors
     int* d_a, * d_b, * d_c;
-    cudaMalloc((void**)&d_a, VECTOR_SIZE * sizeof(int));
-    cudaMalloc((void**)&d_b, VECTOR_SIZE * sizeof(int));
-    cudaMalloc((void**)&d_c, VECTOR_SIZE * sizeof(int));
+    cudaMalloc(&d_a, VECTOR_SIZE * sizeof(int));
+    cudaMalloc(&d_b, VECTOR_SIZE * sizeof(int));
+    cudaMalloc(&d_c, VECTOR_SIZE * sizeof(int));
 
     // Copy input data from host to device
     cudaMemcpy(d_a, h_a, VECTOR_SIZE * sizeof(int), cudaMemcpyHostToDevice);
