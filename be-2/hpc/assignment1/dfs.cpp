@@ -40,7 +40,7 @@ int main() {
 	cout<<"Enter no. of Node,no. of Edges and Starting Node of graph:\n";
 	cin >> n >> m >> start_node;
          //n: node,m:edges
-    cout<<"Enter pair of node and edges:\n";
+    cout<<"Enter the edges (u, v):\n";
 
 	for (int i = 0; i < m; i++) {
     	int u, v;
