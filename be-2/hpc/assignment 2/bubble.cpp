@@ -1,83 +1,73 @@
 #include <iostream>
-#include <chrono>
 #include <omp.h>
-
+#include <ctime>
 using namespace std;
-using namespace std::chrono;
 
-void bubbleSortSerial(int a[], int n)
+void serialBubble(int ar[],int n)
 {
-    time_point<system_clock> starttime, endtime;
-    starttime = system_clock::now();
-    for (int i = 0; i < n-1; i++)
+    for(int i=0; i<n-1; i++)
     {
-        for (int j = 0; j < n-1; j++)
+        for(int j=0; j<n-1; j++)
         {
-            if(a[j] > a[j+1])
+            if(ar[j] > ar[j+1])
             {
-                int temp = a[j];
-                a[j] = a[j+1];
-                a[j+1] = temp;
+                int temp = ar[j];
+                ar[j] = ar[j+1];
+                ar[j+1] = temp;
             }
         }
     }
-    endtime = system_clock::now();
-    duration <double> time= endtime - starttime;
-    cout<<"Time for serial: "<<1000*time.count()<<" milliseconds"<<endl;
 }
 
-void bubbleSortParallel(int b[], int n)
-{
-    time_point<system_clock> starttime, endtime;
-    starttime = system_clock::now();
-    int pass;
-    omp_set_num_threads(2);
-    for (int i = 0; i < n-1; i++)
+void parallelBubble(int ar[], int n) {
+    #pragma omp parallel
     {
-        #pragma omp parallel for
-        for (int j = 0; j < n-1; j++)
-        {
-            if(a[j] > a[j+1])
-            {
-                int temp = a[j];
-                a[j] = a[j+1];
-                a[j+1] = temp;
+        for (int i = 0; i < n - 1; i++) {
+            #pragma omp for
+            for (int j = 0; j < n - 1; j++) {
+                if (ar[j] > ar[j + 1]) {
+                    int temp = ar[j];
+                    ar[j] = ar[j + 1];
+                    ar[j + 1] = temp;
+                }
             }
         }
-    }
-    endtime = system_clock::now();
-    duration<double> time = endtime - starttime;
-    cout<<"Time for Parallel: "<<1000*time.count()<<" milliseconds"<<endl;
-}
-void init_array(int *arr1, int n) {
-    for(int i = 0 ; i < n ; i++) {
-    cin >> arr1[i];
-    }
-}
-void print_array(int *arr, int n) {
-    for(int i = 0 ; i < n ; i++) {
-    cout<<arr[i]<<" ";
     }
 }
 int main()
 {
     int n;
-    int *a;
     cin >> n;
-    a = new int[n];
-    init_array(a, n);
-    cout<<"Initial vector: "<<endl;
-    print_array(a, n);
-    cout<<endl;
-    cout<<endl;
-    bubbleSortSerial(a,n);
-    cout<<"Result after serial bubble sort: "<<endl;
-    print_array(a, n);
-    cout<<endl;
-    cout<<endl;
-    bubbleSortParallel(a,n);
-    cout<<"Result after parallel bubble sort: "<<endl;
-    print_array(a, n);
-    cout<<endl;
+    int *ar;
+    ar = new int[n];
+    for(int i=0; i<n; i++)
+    cin >> ar[i];
+    cout << "Before sorting: " << endl;
+    for(int i=0; i<n; i++)
+    cout << ar[i] << " ";
+    cout << endl;
+    cout << endl;
+    clock_t start1 = clock();
+    serialBubble(ar, n);
+    clock_t end1 = clock();
+    double duration1 = static_cast<double>(end1 - start1) / (CLOCKS_PER_SEC / 1000);
+    cout.precision(3);
+    cout << "After serial sorting: " << endl;
+    for(int i=0; i<n; i++)
+    cout << ar[i] << " ";
+    cout << "time taken: " << fixed << duration1 << " milliseconds";
+    cout << endl; 
+    cout << endl;
+    clock_t start2 = clock();
+    parallelBubble(ar, n);
+    clock_t end2 = clock();
+    double duration2 = static_cast<double>(end2 - start2) / (CLOCKS_PER_SEC / 1000);
+    cout << "After parallel sorting: " << endl;
+    for(int i=0; i<n; i++)
+    cout << ar[i] << " ";
+    cout.precision(3);
+    cout << "time taken : " << fixed << duration2 << " milliseconds";
+    cout << endl; 
+
     return 0;
 }
