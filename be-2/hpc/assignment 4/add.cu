@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <cuda_runtime.h>
 
-const int VECTOR_SIZE = 1000000;
+const int VECTOR_SIZE = 100;
 
 __global__ void vectorAdd(const int* a, const int* b, int* c, int size)
 {
@@ -46,13 +46,24 @@ int main()
     // Copy the result from device to host
     cudaMemcpy(h_c, d_c, VECTOR_SIZE * sizeof(int), cudaMemcpyDeviceToHost);
 
-    // Print the first few elements of the resulting vector
-    for (int i = 0; i < 10; ++i)
+   
+    std::cout << "\nfirst vector: \n";
+    for(int i=0; i<VECTOR_SIZE; i++)
+    {
+        std::cout << h_a[i] << " ";
+    }
+    std::cout << "\nsecond vector: \n";
+    for(int i=0; i<VECTOR_SIZE; i++)
+    {
+        std::cout << h_b[i] << " ";
+    }
+     // Print the first few elements of the resulting vector
+    std::cout << "\nfirst few elements of the resulting vector: \n";
+    for (int i = 0; i < VECTOR_SIZE; ++i)
     {
         std::cout << h_c[i] << " ";
+        
     }
-    std::cout << std::endl;
-
     // Free device memory
     cudaFree(d_a);
     cudaFree(d_b);
