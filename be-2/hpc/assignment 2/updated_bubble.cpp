@@ -83,11 +83,6 @@ int main()
     print_array(a, n);
     cout<<endl;
     cout<<endl;
-    bubbleSortOddEven(c,n);
-    cout<<"Result after odd-even sort: "<<endl;
-    print_array(c, n);
-    cout<<endl;
-    cout<<endl;
     bubbleSortParallel(b,n);
     cout<<"Result after parallel bubble sort: "<<endl;
     print_array(b, n);
