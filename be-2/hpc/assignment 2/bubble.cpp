@@ -1,8 +1,9 @@
 #include <iostream>
 #include <omp.h>
-#include <ctime>
+#include <chrono>
+#include <cstdlib>
 using namespace std;
-
+using namespace std::chrono;
 void serialBubble(int ar[],int n)
 {
     for(int i=0; i<n-1; i++)
@@ -20,19 +21,17 @@ void serialBubble(int ar[],int n)
 }
 
 void parallelBubble(int ar[], int n) {
-    #pragma omp parallel
-    {
-        for (int i = 0; i < n - 1; i++) {
-            #pragma omp for
-            for (int j = 0; j < n - 1; j++) {
-                if (ar[j] > ar[j + 1]) {
-                    int temp = ar[j];
-                    ar[j] = ar[j + 1];
-                    ar[j + 1] = temp;
-                }
-            }
+      for (int i = 0; i < n - 1; i++) {
+        int pass = i%2;
+          #pragma omp parallel for
+          for (int j = pass; j < n - 1; j+=2) {
+              if (ar[j] > ar[j + 1]) {
+                  int temp = ar[j];
+                  ar[j] = ar[j + 1];
+                  ar[j + 1] = temp;
+              }
+          }
         }
-    }
 }
 int main()
 {
@@ -41,33 +40,34 @@ int main()
     int *ar;
     ar = new int[n];
     for(int i=0; i<n; i++)
-    cin >> ar[i];
+    {
+      ar[i] = rand()%100;
+    }
     cout << "Before sorting: " << endl;
     for(int i=0; i<n; i++)
     cout << ar[i] << " ";
     cout << endl;
     cout << endl;
-    clock_t start1 = clock();
+
+    auto start1 = high_resolution_clock::now();
     serialBubble(ar, n);
-    clock_t end1 = clock();
-    double duration1 = static_cast<double>(end1 - start1) / (CLOCKS_PER_SEC / 1000);
-    cout.precision(3);
+    auto end1 = high_resolution_clock::now();
+    auto duration1 = duration_cast<milliseconds>(end1-start1);
     cout << "After serial sorting: " << endl;
     for(int i=0; i<n; i++)
     cout << ar[i] << " ";
-    cout << "time taken: " << fixed << duration1 << " milliseconds";
-    cout << endl; 
+    cout << "time taken: " << duration1.count() << " milliseconds";
     cout << endl;
-    clock_t start2 = clock();
+    cout << endl;
+    auto start2 = high_resolution_clock::now();
     parallelBubble(ar, n);
-    clock_t end2 = clock();
-    double duration2 = static_cast<double>(end2 - start2) / (CLOCKS_PER_SEC / 1000);
+    auto end2 = high_resolution_clock::now();
+    auto duration2 = duration_cast<milliseconds>(end2-start2);
     cout << "After parallel sorting: " << endl;
     for(int i=0; i<n; i++)
     cout << ar[i] << " ";
-    cout.precision(3);
-    cout << "time taken : " << fixed << duration2 << " milliseconds";
-    cout << endl; 
+    cout << "time taken : " << duration2.count()<< " milliseconds";
+    cout << endl;
 
     return 0;
 }
