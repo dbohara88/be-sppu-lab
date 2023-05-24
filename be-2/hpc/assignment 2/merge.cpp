@@ -1,8 +1,9 @@
 #include <iostream>
 #include <vector>
-
+#include <chrono>
+#include <cstdlib>
 using namespace std;
-
+using namespace std::chrono;
 void merge(vector<int>& arr, int left, int mid, int right) {
     vector<int> leftArr(arr.begin() + left, arr.begin() + mid + 1);
     vector<int> rightArr(arr.begin() + mid + 1, arr.begin() + right + 1);
@@ -57,14 +58,21 @@ int main() {
     cin >> n;
     vector<int> arr (n);
     for(int i=0; i<n; i++)
-    cin >> arr[i];
+    arr[i] = rand()%100;
     cout << "Original array: ";
     printArray(arr);
 
+    auto start1 = high_resolution_clock::now();
     mergeSort(arr, 0, arr.size() - 1);
+    auto end1 = high_resolution_clock::now();
+    auto duration1 = duration_cast<milliseconds>(end1-start1);
+    cout <<"\n time taken: "<< duration1.count() << " miliseconds" << endl;
 
-    cout << "Sorted array: ";
-    printArray(arr);
+    auto start2 = high_resolution_clock::now();
+    parallelMergeSort(arr, 0, arr.size() - 1);
+    auto end2 = high_resolution_clock::now();
+    auto duration2 = duration_cast<milliseconds>(end2-start2);
+    cout <<"\n time taken: "<< duration2.count() << " miliseconds" << endl;
 
     return 0;
 }
